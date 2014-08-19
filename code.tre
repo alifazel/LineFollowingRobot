@@ -1,0 +1,12 @@
+ÀÄfirst attempt
+   ÃÄMAIN  0/60  Ram=1
+   ³  ÃÄ??0??
+   ³  ÃÄ@const65  0/8  Ram=0
+   ³  ÃÄmove_motor1  0/20  Ram=1
+   ³  ³  ÃÄ@const61  0/8  Ram=0
+   ³  ³  ÀÄ@const63  0/6  Ram=0
+   ³  ÃÄ@const65  0/8  Ram=0
+   ³  ÀÄmove_motor2  0/21  Ram=1
+   ³     ÃÄ@const61  0/8  Ram=0
+   ³     ÀÄ@const63  0/6  Ram=0
+   ÀÄTimer0_isr  0/5  Ram=0

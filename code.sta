@@ -1,0 +1,50 @@
+
+ROM used: 177 (4%)
+          177 (4%) including unused fragments
+
+          1 Average locations per line
+          7 Average locations per statement
+
+RAM used: 18 (7%) at main() level
+          18 (7%) worst case
+
+Stack used: 3 worst case (out of 8 total available)
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+   74    25 100  first attempt.c
+  224     0   0  C:\Program Files (x86)\PICC\devices\16F648A.h
+----- -----
+  298    25 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0      8   5   0             @const61
+0      6   3   0             @const63
+0      8   5   0             @const65
+0     20  11   1   125  3.4  move_motor1
+0     21  12   1   125  3.4  move_motor2
+0      5   3   0    22  1.3  Timer0_isr
+0     60  34   1   458  4.7  MAIN
+
+Program metrics:
+    Functions               4
+    Statements              25
+    Comments                65
+    Volume (V)              974
+    Difficilty (D)          12.9
+    Effort to implement (E) 12583
+    Time to implement (T)   12 minutes
+    Est Delivered Bugs (B)  0
+    Cyclomatic Complexity   2
+    Maintainability (MI)    111
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00003     4  0  
+00004-00030    45  0  
+00031-007FF   128  1871  
+00800-00FFF     0  2048  
+
+
+

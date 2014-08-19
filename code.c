@@ -2,96 +2,122 @@
 #use delay(clock=4000000)
 #fuses NOWDT, INTRC, NOPUT, NOPROTECT, NOLVP, NOMCLR
 
+int const LOOKUPTABLE[4] = {0B1001,0B1100,0B0110,0B0011};
+int const DIR[2]={1,3};
+int const SPEED[4]={40,20,10,5};
 
+struct pin{
+	int sensor1:1;		//Port A
+	int sensor2:1;
+	int sensor3:1;
+	int sensor4:1;
+	int sensor5:1;
+	int unused:3;
 
-   static int const LUTBL[4] = {0x09,0x03,0x06,0x0C};   
-   int DIR1=1, DIR2=1;
-   int Index1, Index2;
-   int i1=1, i2=1;
-   int speed1, speed2;
-   int const Speeds[4] = {10, 30, 60, 100};
-   int d;
-   
-
-
-struct Motor_pin_map 
-{
-boolean Forward1: 1;      
-int Speed1: 2;         // for motor1 speed, using 2 switches  
-boolean Forward2: 1;      
-int Speed2: 2;       // for motor2 speed, using 2 switches
-int unused: 2;
-int Motor1: 4;   // output pin of the motor
-int Motor2: 4;   
-       
+	int Output1:4;		//Port B
+	int Output2:4;
 };
 
-struct Motor_pin_map MotorPort;
-struct Motor_pin_map MotorPortDirection;
-#byte MotorPort = 0x05
-#byte MotorPortDirection = 0x85
+struct pin IO_data;
+struct pin IO_status;
+
+#byte IO_data = 0x05
+#byte IO_status = 0x85
+int TableIndex_motor1=0;
+int TableIndex_motor2=0;
+int c1=0;
+int c2=0;
+int speed_setting;
+
 
 
 #int_RTCC
 void Timer0_isr()
 {
-   speed1 = Speeds[MotorPort.Speed1];     // choose a speed for motor1
-   speed2 = Speeds[MotorPort.Speed2];     // choose a speed for motor2
-   
-   i1++;   
-   if(i1==speed1)
-   {
-     Index1 = (Index1+DIR1)%4;
-     i1=0;
-   }
+	c1++;		// Delay Counters
+	c2++;
+}
 
-   i2++;   
-   if(i2==speed2)
-   {
-     Index2 = (Index2+DIR2)%4;
-     i2=0;
-   }
+void move_forward() {
 
+	IO_data.Output1 = LOOKUPTABLE[TableIndex_motor1];
+	IO_data.Output2 = LOOKUPTABLE[TableIndex_motor2];
+	TableIndex_motor1 = ((TableIndex_motor1+1)%4);
+	TableIndex_motor2 = ((TableIndex_motor2+1)%4);
+	c1=0
+	c2=0;
 }
 
 
-int Direction(boolean Forward,int D)   // function to control the motor directions
+void turn_left_fast() {
 
-{
-   if(Forward==0)
-      d=1;
-   if(Forward==1)
-      d=-1;   
-
-   return d;
+	IO_data.Output1 = LOOKUPTABLE[TableIndex_motor1];
+	IO_data.Output2 = LOOKUPTABLE[TableIndex_motor2];
+	TableIndex_motor1 = ((TableIndex_motor1-1)%4);
+	TableIndex_motor2 = ((TableIndex_motor2+1)%4);
+	c1=0
+	c2=0;
 }
 
 
-void main()
-{
-   
+void turn_right_fast() {
 
-   MotorPortDirection.Motor1 = 0x0;      
-   MotorPortDirection.Motor2 = 0x0;
-   MotorPortDirection.Forward1 = 0b1;   
-   MotorPortDirection.Speed1 = 0b11;   
-   MotorPortDirection.Forward2 = 0b1;   
-   MotorPortDirection.Speed2 = 0b11;   
-   setup_timer_0(RTCC_INTERNAL | RTCC_DIV_4);   //generates interrupt every 1.024ms
-   enable_interrupts(INT_RTCC);
-   enable_interrupts(GLOBAL);   
+	IO_data.Output1 = LOOKUPTABLE[TableIndex_motor1];
+	IO_data.Output2 = LOOKUPTABLE[TableIndex_motor2];
+	TableIndex_motor1 = ((TableIndex_motor1+1)%4);
+	TableIndex_motor2 = ((TableIndex_motor2-1)%4);
+	c1=0
+	c2=0;
+}
 
 
+void turn_left_slow() {
+
+	IO_data.Output2 = LOOKUPTABLE[TableIndex_motor2];
+	TableIndex_motor2 = ((TableIndex_motor2+1)%4);
+	c2=0;
+}
 
 
+void turn_right_slow() {
 
-while(1)
-{
-   DIR1 = Direction(MotorPort.Forward1, DIR1);   //determines the direction of motor1
-   DIR2 = Direction(MotorPort.Forward2, DIR2);   //determines the direction of motor2
-
-   MotorPort.Motor1=LUTBL[Index1];
-   MotorPort.Motor2=LUTBL[Index2];
+	IO_data.Output1 = LOOKUPTABLE[TableIndex_motor1];
+	TableIndex_motor1 = ((TableIndex_motor1+1)%4);
+	c1=0
 
 }
+
+void update_sensor_array() {
+	
+	sensor_array[0]=IO_status.sensor1;
+	sensor_array[1]=IO_status.sensor2;
+	sensor_array[2]=IO_status.sensor3;
+	sensor_array[3]=IO_status.sensor4;
+	sensor_array[4]=IO_status.sensor5;
+}
+
+void main(){
+
+	IO_status.Output1 = 0b0000;	//Sets motor 1 as output TRIS
+	IO_status.Output2 = 0b0000;	//Sets motor 2 as output TRIS
+	IO_status.sensor1 = 0b1;	//Sets sensor 1 as input TRIS
+	IO_status.sensor2 = 0b1;	//Sets sensor 2 as input TRIS
+	IO_status.sensor3 = 0b1;	//Sets sensor 3 as input TRIS
+	IO_status.sensor4 = 0b1;	//Sets sensor 4 as input TRIS
+	IO_status.sensor5 = 0b1;	//Sets sensor 5 as input TRIS
+	enable_interrupts(INT_RTCC);
+	enable_interrupts(GLOBAL);
+
+	int sensor_array[5];
+	
+	while(1)
+	{
+		setup_timer_0(RTCC_INTERNAL|RTCC_DIV_4);
+		
+		update_sensor_array();
+
+		if ((sensor_array==(0,0,1,0,0)))
+			move_forward();
+
+	}
 }

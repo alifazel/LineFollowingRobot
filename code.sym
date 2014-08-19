@@ -1,0 +1,72 @@
+004-005 @READ_PROGRAM_MEMORY8.P1
+005-006 IO_data
+015     CCP_1_LOW
+015     CCP_1
+016     CCP_1_HIGH
+01F.6   C1OUT
+01F.7   C2OUT
+020     @INTERRUPT_AREA
+021     @INTERRUPT_AREA
+022     @INTERRUPT_AREA
+023     @INTERRUPT_AREA
+024     @INTERRUPT_AREA
+025     @INTERRUPT_AREA
+026     @INTERRUPT_AREA
+027     @INTERRUPT_AREA
+028     TableIndex_motor1
+029     TableIndex_motor2
+02A     c1
+02B     c2
+02C     move_motor1.@SCRATCH1
+02C     move_motor2.@SCRATCH1
+02C     MAIN.@SCRATCH1
+077     @SCRATCH
+078     @SCRATCH
+078     _RETURN_
+079     @SCRATCH
+07A     @SCRATCH
+085-086 IO_status
+09B-09C @READ_PROGRAM_MEMORY8.P1
+
+ROM Allocation:
+0031  LOOKUPTABLE
+0039  DIR
+003F  SPEED
+004C  move_motor1
+0060  move_motor2
+0047  Timer0_isr
+0075  MAIN
+0075  @cinit
+
+
+User Memory space: 
+
+User Memory space: 
+
+Project Directory:
+    Y:\Robot Project\
+
+Project Files:
+    first attempt.c
+    C:\Program Files (x86)\PICC\devices\16F648A.h
+
+Units:
+    Y:\Robot Project\first attempt (main)
+
+Compiler Settings:
+    Processor:      PIC16F648A
+    Pointer Size:   16
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+
+Output Files:
+    Errors:      first attempt.err
+    Ext Symbols: first attempt.esym
+    INHX8:       first attempt.hex
+    Symbols:     first attempt.sym
+    List:        first attempt.lst
+    Debug/COFF:  first attempt.cof
+    Project:     first attempt.PJT
+    Call Tree:   first attempt.tre
+    Statistics:  first attempt.sta
