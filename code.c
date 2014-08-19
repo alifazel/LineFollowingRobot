@@ -25,8 +25,7 @@ struct pin IO_status;
 #byte IO_status = 0x85
 int TableIndex_motor1=0;
 int TableIndex_motor2=0;
-int c1=0;
-int c2=0;
+int counter=0;
 int speed_setting;
 
 
@@ -34,56 +33,52 @@ int speed_setting;
 #int_RTCC
 void Timer0_isr()
 {
-	c1++;		// Delay Counters
-	c2++;
+	counter++;		// Delay Counters
 }
 
 void move_forward() {
 
-	IO_data.Output1 = LOOKUPTABLE[TableIndex_motor1];
-	IO_data.Output2 = LOOKUPTABLE[TableIndex_motor2];
-	TableIndex_motor1 = ((TableIndex_motor1+1)%4);
-	TableIndex_motor2 = ((TableIndex_motor2+1)%4);
-	c1=0
-	c2=0;
+    IO_data.Output1 = LOOKUPTABLE[TableIndex_motor1];
+    IO_data.Output2 = LOOKUPTABLE[TableIndex_motor2];
+    TableIndex_motor1 = ((TableIndex_motor1+1)%4);
+    TableIndex_motor2 = ((TableIndex_motor2+1)%4);
+    counter=0;
 }
 
 
 void turn_left_fast() {
 
-	IO_data.Output1 = LOOKUPTABLE[TableIndex_motor1];
-	IO_data.Output2 = LOOKUPTABLE[TableIndex_motor2];
-	TableIndex_motor1 = ((TableIndex_motor1-1)%4);
-	TableIndex_motor2 = ((TableIndex_motor2+1)%4);
-	c1=0
-	c2=0;
+    IO_data.Output1 = LOOKUPTABLE[TableIndex_motor1];
+    IO_data.Output2 = LOOKUPTABLE[TableIndex_motor2];
+    TableIndex_motor1 = ((TableIndex_motor1-1)%4);
+    TableIndex_motor2 = ((TableIndex_motor2+1)%4);
+    counter=0;
 }
 
 
 void turn_right_fast() {
 
-	IO_data.Output1 = LOOKUPTABLE[TableIndex_motor1];
-	IO_data.Output2 = LOOKUPTABLE[TableIndex_motor2];
-	TableIndex_motor1 = ((TableIndex_motor1+1)%4);
-	TableIndex_motor2 = ((TableIndex_motor2-1)%4);
-	c1=0
-	c2=0;
+    IO_data.Output1 = LOOKUPTABLE[TableIndex_motor1];
+    IO_data.Output2 = LOOKUPTABLE[TableIndex_motor2];
+    TableIndex_motor1 = ((TableIndex_motor1+1)%4);
+    TableIndex_motor2 = ((TableIndex_motor2-1)%4);
+    counter=0;
 }
 
 
 void turn_left_slow() {
 
-	IO_data.Output2 = LOOKUPTABLE[TableIndex_motor2];
-	TableIndex_motor2 = ((TableIndex_motor2+1)%4);
-	c2=0;
+    IO_data.Output2 = LOOKUPTABLE[TableIndex_motor2];
+    TableIndex_motor2 = ((TableIndex_motor2+1)%4);
+    counter=0;
 }
 
 
 void turn_right_slow() {
 
-	IO_data.Output1 = LOOKUPTABLE[TableIndex_motor1];
-	TableIndex_motor1 = ((TableIndex_motor1+1)%4);
-	c1=0
+    IO_data.Output1 = LOOKUPTABLE[TableIndex_motor1];
+    TableIndex_motor1 = ((TableIndex_motor1+1)%4);
+    counter=0;
 
 }
 
@@ -116,8 +111,30 @@ void main(){
 		
 		update_sensor_array();
 
-		if ((sensor_array==(0,0,1,0,0)))
-			move_forward();
+        if (counter==5)
+        {
+            if ((sensor_array==(0,0,1,0,0)))
+                move_forward();
+        }
+        
+        if (counter==10)
+        {
+            if ((sensor_array==(0,1,0,0,0)))
+                turn_left_fast();
+
+            if ((sensor_array==(0,0,0,1,0)))
+                turn_right_fast();
+        }
+        
+            
+        if (counter==20)
+        {
+            if ((sensor_array==(1,0,0,0,0)))
+                turn_left_slow();
+        
+            if ((sensor_array==(0,1,0,0,0)))
+                turn_right_slow();
+        }
 
 	}
 }
