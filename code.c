@@ -25,8 +25,7 @@ int TableIndex_motor2=0;
 int c1=0, c2=0;
 int speed_setting;
 int sensor_array[5];
-
-
+int c3=0;
 
 #int_RTCC
 void Timer0_isr()
@@ -38,25 +37,26 @@ void Timer0_isr()
 void move_forward() {
 
 	
-	if(c1>=5)
+	if(c1>=10)
     {IO_data.Output1 = LOOKUPTABLE[TableIndex_motor1];
  	TableIndex_motor1 = ((TableIndex_motor1+1)%4);
 	c1=0;
 				}
 				
 
-	if(c2>=5)
+	if(c2>=10)
     {IO_data.Output2 = LOOKUPTABLE[TableIndex_motor2];
    	TableIndex_motor2 = ((TableIndex_motor2-1)%4);
     c2=0;
 				}
+
 				
 }
 
 
 void turn_left_fast() {
 
-	if(c1>=10)  
+	if(c1>=20)  
 	{
 	IO_data.Output1 = LOOKUPTABLE[TableIndex_motor1];
   	TableIndex_motor1 = ((TableIndex_motor1+1)%4);
@@ -64,19 +64,21 @@ void turn_left_fast() {
 	}
 
 
-	if(c2>=10)
+	if(c2>=20)
     {
 	IO_data.Output2 = LOOKUPTABLE[TableIndex_motor2];
     TableIndex_motor2 = ((TableIndex_motor2+1)%4);
     c2=0;
 	}
 
+
+
 }
 
 
 void turn_right_fast() {
 
-	if(c1>=10)  
+	if(c1>=20)  
 	{
 	IO_data.Output1 = LOOKUPTABLE[TableIndex_motor1];
   	TableIndex_motor1 = ((TableIndex_motor1-1)%4);
@@ -84,7 +86,7 @@ void turn_right_fast() {
 	}
 
 
-	if(c2>=10)
+	if(c2>=20)
     {
 	IO_data.Output2 = LOOKUPTABLE[TableIndex_motor2];
     TableIndex_motor2 = ((TableIndex_motor2-1)%4);
@@ -95,27 +97,31 @@ void turn_right_fast() {
 
 void turn_left_slow() {
 
-    
-    if(c2==60)
-{
-	IO_data.Output2 = LOOKUPTABLE[TableIndex_motor2]; 
-    TableIndex_motor2 = ((TableIndex_motor2+1)%4);
-    c2=0;
-}
+    for (c3=0; c3<5; c3++)
+    {
+        if(c2>=20)
+        {
+            IO_data.Output2 = LOOKUPTABLE[TableIndex_motor2]; 
+            TableIndex_motor2 = ((TableIndex_motor2-1)%4);
+            c2=0;
+        }
+    }
+
 	
 }
 
 
 void turn_right_slow() {
 
-      
- 	if(c1==60)
-{
-	IO_data.Output1 = LOOKUPTABLE[TableIndex_motor1];
-    TableIndex_motor1 = ((TableIndex_motor1-1)%4);
-	c1=0;
-}	
-
+    for (c3=0; c3<5; c3++)
+ 	{
+        if(c1>=20)
+        {
+            IO_data.Output1 = LOOKUPTABLE[TableIndex_motor1];
+            TableIndex_motor1 = ((TableIndex_motor1+1)%4);
+            c1=0;
+        }	
+    }
 }
 
 /*void update_sensor_array() {
@@ -144,31 +150,53 @@ void main(){
 		
 	/*	update_sensor_array();*/
 
-       
 			
+			//Straight
+
             if (IO_data.sensors==0b00100)
                 move_forward();
 			
-			
-       		if (IO_data.sensors==0b00111)
-                turn_left_fast();
 
+			//Turn Left
 
-            if (IO_data.sensors==0b11100)
-                turn_right_fast();
-        	
-			
-			
-			if (IO_data.sensors==0b00110)
+     		if (IO_data.sensors==0b00010)
                 turn_left_slow();
 			
-			
-			
+       		if (IO_data.sensors==0b00110)
+            	turn_left_slow();
+
+      		if (IO_data.sensors==0b00111)
+            	turn_left_slow();
+			            
+     		if (IO_data.sensors==0b00011)
+                turn_left_slow();
+
+			if (IO_data.sensors==0b00001)
+                turn_left_slow();
+
+			if (IO_data.sensors==0b00101)
+                turn_left_slow();
+
+			//Turn Right
+
+            if (IO_data.sensors==0b01000)
+                turn_right_slow();  
+
             if (IO_data.sensors==0b01100)
+             	turn_right_slow();
+  	
+            if (IO_data.sensors==0b11100)
+             	turn_right_slow();
+  			
+            if (IO_data.sensors==0b11000)
                 turn_right_slow();
-			        
-            
-       
+			
+            if (IO_data.sensors==0b10000)
+                turn_right_slow();  
+
+            if (IO_data.sensors==0b10100)
+                turn_right_slow();  
+
 
 	}
 }
